@@ -1,0 +1,34 @@
+name: Lint
+
+on:
+  workflow_call:
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v7
+
+      - name: Install shfmt
+        run: sudo apt-get install -y shfmt
+
+      - name: Install dependencies
+        run: uv sync
+
+      - name: Check Python formatting
+        run: uv run ruff format --check .
+
+      - name: Lint Python
+        run: uv run ruff check .
+
+      - name: Type check Python
+        run: uv run ty check .
+
+      - name: Check Markdown formatting
+        run: git ls-files '*.md' | xargs -r uv run mdformat --check
+
+      - name: Check shell formatting
+        run: git ls-files '*.sh' | xargs -r shfmt -d
