@@ -25,6 +25,10 @@ jobs:
           ]
           print(json.dumps(versions))
           ")
+          if [ "$versions" = "[]" ]; then
+            echo "No Python versions declared in pyproject.toml classifiers" >&2
+            exit 1
+          fi
           echo "versions=$versions" >> "$GITHUB_OUTPUT"
 
   test:
