@@ -4,11 +4,35 @@ on:
   workflow_call:
 
 jobs:
+  setup:
+    runs-on: ubuntu-latest
+    outputs:
+      python-versions: ${{ steps.versions.outputs.versions }}
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Read Python versions from classifiers
+        id: versions
+        run: |
+          versions=$(python3 -c "
+          import tomllib, json, re
+          with open('pyproject.toml', 'rb') as f:
+              data = tomllib.load(f)
+          classifiers = data.get('project', {}).get('classifiers', [])
+          versions = [
+              m.group(1) for c in classifiers
+              if (m := re.fullmatch(r'Programming Language :: Python :: (\d+\.\d+)', c))
+          ]
+          print(json.dumps(versions))
+          ")
+          echo "versions=$versions" >> "$GITHUB_OUTPUT"
+
   test:
+    needs: setup
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version: ["3.11", "3.12", "3.13", "3.14"]
+        python-version: ${{ fromJson(needs.setup.outputs.python-versions) }}
 
     steps:
       - uses: actions/checkout@v6
