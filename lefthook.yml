@@ -12,3 +12,7 @@ pre-commit:
       glob: "*.sh"
       run: shfmt -w {staged_files}
       stage_fixed: true
+    format-pyproject:
+      glob: "pyproject.toml"
+      run: uv run pyproject-fmt {staged_files}
+      stage_fixed: true

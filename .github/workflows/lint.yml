@@ -32,3 +32,6 @@ jobs:
 
       - name: Check shell formatting
         run: git ls-files '*.sh' | xargs -r shfmt -d
+
+      - name: Check pyproject.toml formatting
+        run: uv run pyproject-fmt --check pyproject.toml
